@@ -1,0 +1,88 @@
+{% extends "base/index_base.html" %}
+
+{% block page_content %}
+<div class="row mb-3">
+    <h3>删除温度信息</h3>
+</div>
+
+<div class="row mb-3">
+    <form id="FilterForm">
+        <div class="row mb-2">
+            <label for="time" class="col-sm-2 col-form-label">日期: </label>
+            <div class="col-sm-4">
+                <input type="text" id="time1" class="form-control form-control-sm" placeholder="年">
+            </div>
+            <div class="col-sm-2 mx-auto text-center"><h5> - </h5></div>
+            <div class="col-sm-4">
+                <input type="text" id="time2" class="form-control form-control-sm" placeholder="月">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+
+            </div>
+            <div class="col-sm-4">
+                <button id="sumbit" type="submit" class="btn btn-primary">删除温度</button>
+            </div>
+            <div class="col-sm-4">
+                <button id="clear" type="button" class="btn btn-primary" onclick="ClearAll()">清空条件</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+
+function GetDateValue(compoment){
+    var year=$(compoment+"1").val()
+    var month=$(compoment+"2").val()
+
+    if(!$.isNumeric(year) || !$.isNumeric(month)){
+        return "0000-00"
+    }
+
+    if (1<=parseInt(month) || parseInt(month)<=9){
+        month="0"+parseInt(month)
+    }
+
+    return year+"-"+month
+}
+
+
+$(document).ready(function(){
+    var query_data=[];
+    //激活提示栏
+    $("#delete_page").addClass("active");
+
+    //查询
+    $('#FilterForm').submit(
+        function(event){
+            event.preventDefault();
+            var send_data={
+                'time':GetDateValue("#time"),
+            };
+            $.ajax({
+                type:"POST",
+                cache:false,
+                data:JSON.stringify(send_data),
+                url:"/action/delete_sst",
+                contentType:'application/json;charset=UTF-8',
+                dataType:'json',
+                async:true,
+                timeout:10000,
+                success: function(response){
+                    window.alert(response.message);
+                },
+                error:function(error){
+                    window.alert("查询失败，请联系管理员");
+                    $(".modal").modal("hide");
+                }
+            })
+        }
+    );
+
+})
+
+</script>
+
+{% endblock %}

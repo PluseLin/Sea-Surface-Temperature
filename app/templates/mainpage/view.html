@@ -1,0 +1,126 @@
+{% extends "base/index_base.html" %}
+
+{% block page_content %}
+
+<div class="row mb-3">
+    <h3>查看地图</h3>
+</div>
+
+<div class="row mb-3">
+    <div id="map">
+
+    </div>
+</div>
+
+<div class="row mb-3">
+    <label for="time" class="col-sm-3 col-form-label">日期: </label>
+    <div class="col-sm-3">
+        <input type="text" id="time1" class="form-control form-control-sm" placeholder="年" >
+    </div>
+    <div class="col-sm-2 mx-auto text-center"><h5> - </h5></div>
+    <div class="col-sm-3">
+        <input type="text" id="time2" class="form-control form-control-sm" placeholder="月">
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-3">经度: </div>
+    <div class="col-sm-3" id="show_lon"></div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-3">纬度: </div>
+    <div class="col-sm-3" id="show_lat"></div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-3">海洋表面温度(SST): </div>
+    <div class="col-sm-3" id="show_sst"></div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-sm-3">海表温度异常(SSAT): </div>
+    <div class="col-sm-3" id="show_ssta"></div>
+</div>
+
+<style>
+    #map {
+      height: 400px;
+    }
+</style>
+
+
+<script>
+function findNearestEvenNumber(floatNumber) {
+  var roundedNumber = Math.round(floatNumber); // 四舍五入为最接近的整数
+  var nearestEvenNumber = Math.round(roundedNumber / 2) * 2; // 将最接近的整数除以2后再乘以2，即为最接近的偶数
+  return nearestEvenNumber;
+}
+
+function GetDateValue(compoment){
+    var year=$(compoment+"1").val()
+    var month=$(compoment+"2").val()
+
+    if(!$.isNumeric(year) || !$.isNumeric(month)){
+        return "0000-00"
+    }
+
+    if (1<=parseInt(month) && parseInt(month)<=9){
+        month="0"+parseInt(month)
+    }
+    return year+"-"+month
+}
+
+$(document).ready(function(){
+
+    $("#view_page").addClass("active");   
+
+    $("#time1").val("2019")
+    $("#time2").val("1")
+
+    var map = L.map('map').setView([0, 0], 2); // 设置地图初始位置和缩放级别
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+    }).addTo(map);
+
+    // 添加点击事件处理程序
+    map.on('click', function(e) {
+        var lat = parseFloat(e.latlng.lat.toFixed(6));
+        var lon = parseFloat(e.latlng.lng.toFixed(6));
+        if (lon<0){
+            lon=360+lon
+        }
+        lat_new=findNearestEvenNumber(lat)
+        lon_new=findNearestEvenNumber(lon)
+        send_data={
+            "time":GetDateValue("#time"),
+            "lon":lon_new,
+            "lat":lat_new
+        }
+        $.ajax({
+            type:"POST",
+            cache:false,
+            data:JSON.stringify(send_data),
+            url:"/action/query_position",
+            contentType:'application/json;charset=UTF-8',
+            dataType:'json',
+            async:true,
+            timeout:10000,
+            success: function(response){
+                $("#show_lon").text(lon)
+                $("#show_lat").text(lat)
+                $("#show_sst").text(response.sst)
+                $("#show_ssta").text(response.ssta)
+            },
+            error:function(error){
+                window.alert("查询失败，请联系管理员");
+            }
+        })
+    });
+
+})
+</script>
+
+{% endblock %}

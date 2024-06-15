@@ -1,0 +1,116 @@
+{% extends "base/index_base.html" %}
+
+{% block page_content %}
+<div class="row mb-3">
+    <form method="POST"  enctype="multipart/form-data" id="upload_file">
+        <div class="mb-3">
+            <label class="col-sm-3 col-form-label">请选择海洋温度文件（后缀为.nc）</label>
+            <div class="col-sm-9">
+                <input class="form-control" type="file" id="FileMultiple" multiple>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button id="sumbit" class="btn btn-primary">上传</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="row mb-3">
+    <div class="modal modal-lg fade" id="UploadModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">上传文件</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modal_message">
+                    <p>数据导入中，请耐心等待...</p>
+                    <p>请不要刷新页面，以免导入失败...</p>
+                    <img src="{{url_for('static',filename='images/loading.gif')}}" alt="Animation" style="width: 12.5%;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function InitModalMessage(compoment){
+    $(compoment).modal("show");
+    $(compoment+" .modal-footer button").prop("disabled",true);
+    $(compoment+" .modal-header button").prop("disabled",true);
+    var modal_area=$("#modal_message");
+    modal_area.empty();
+    modal_area.append(
+        `<p>数据导入中，请耐心等待...</p><p>请不要刷新页面，以免上传失败...</p><img src="{{url_for('static',filename='images/loading.gif')}}" alt="Animation" style="width: 12.5%;" />`
+    );
+}
+
+function SetModalMessage(compoment,message){
+    var modal_area=$("#modal_message");
+    modal_area.empty();
+    modal_area.append(message);
+    $(compoment+" .modal-footer button").prop("disabled",false);
+    $(compoment+" .modal-header button").prop("disabled",false);
+}
+
+$(document).ready(function(){
+    $("#upload_page").addClass("active");
+    $("#upload_file").submit(
+        function(event){
+            event.preventDefault();
+            //获取文件
+            var files=$('#FileMultiple')[0].files
+            var formdata=new FormData();
+            for(var file of files){
+                formdata.append("files",file,file.name);
+            }
+            //启用模态框
+            InitModalMessage("#UploadModal");
+            //ajax
+            $.ajax({
+                type:"POST",
+                cache:false,
+                data:formdata,
+                processData:false,
+                url:"/action/uploadtemp",
+                contentType:false,
+                success:function(response){
+                    var success_num = response.success_files.length
+                    var fail_num = response.fail_files.length
+                    var duplicated_num = response.duplicated_files.length
+                    var message="<p>"+success_num+"份温度文件上传成功，"+fail_num+"份温度文件上传失败，"+duplicated_num+"份温度文件已重复上传"+"</p>";
+                    if (success_num>0){
+                        message+=("<p>以下温度文件上传成功</p><ul>")
+                        for(var file of response.success_files){
+                            message+=("<li>"+file+"</li>")
+                        }
+                        message+="</ul>"
+                    }
+                    if (fail_num>0){
+                        message+=("<p>以下温度文件上传失败</p><ul>")
+                        for(var file of response.fail_files){
+                            message+=("<li>"+file+"</li>")
+                        }
+                        message+="</ul>"
+                    }
+                    if (duplicated_num>0){
+                        message+=("<p>以下温度文件已重复上传</p><ul>")
+                        for(var file of response.duplicated_files){
+                            message+=("<li>"+file+"</li>")
+                        }
+                        message+="</ul>"
+                    }
+                    SetModalMessage("#UploadModal",message);
+                },
+                error:function(error){
+                    SetModalMessage("#UploadModal","<p>系统出现故障，文件上传失败，请联系管理员</p>");
+                }
+            })
+        }
+    )
+})
+</script>
+{% endblock %}

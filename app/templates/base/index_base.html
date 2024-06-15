@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>数据库课程设计</title>
+        
+        {% block styles %}
+            {{ bootstrap.load_css() }}
+            <link rel="stylesheet" href="{{url_for('static',filename='css/leaflet.css')}}" />
+        {% endblock %}
+        
+        {% block scripts %}
+            <!-- Optional JavaScript -->
+            <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+            <script src="{{url_for('static',filename='js/leaflet.js')}}"></script>
+            {{ bootstrap.load_js() }}
+
+            {% endblock %}
+        
+        {% endblock %}
+    </head>
+    <body>
+        {% block navbar %}
+        <div class="row mb-3">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+              <div class="container-fluid">
+                <a class="navbar-brand" href="#">数据库课程设计</a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="nav me-auto mb-2 mb-lg-0 nav-tabs">
+                    <li class="nav-item">
+                      <a class="nav-link" id="view_page" aria-current="page" href="{{url_for('main.index')}}">查看地图</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="pred_page" aria-current="page" href="{{url_for('main.predtemp')}}">预测温度</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="upload_page" aria-current="page" href="{{url_for('main.uploadtemp')}}">上传温度</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="edit_page" aria-current="page" href="{{url_for('main.edittemp')}}">修改温度</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" id="delete_page" aria-current="page" href="{{url_for('main.deletetemp')}}">删除温度</a>
+                    </li>
+                </div>
+              </div>
+            </nav>
+          </div>
+        {% endblock %}
+        {% block content %}
+        <div class="container">
+            <div class="page-header">
+            {% block page_content %}
+            {% endblock %}
+            </div>
+        </div>
+        {% endblock %}
+
+    </body>
+</html>

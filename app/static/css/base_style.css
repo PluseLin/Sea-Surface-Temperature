@@ -1,0 +1,102 @@
+.view_column{
+	float:left;
+	width:50%; 
+}
+
+.view_titles{
+	border-bottom:1px solid #CECECE;
+}
+
+.note_title_area {
+	text-align: center;
+}
+.note_meta {
+	margin: 0 auto;
+	text-align: center;
+}
+.note_meta_info{
+	text-align: center;
+	float:left;
+	margin-right: 10px;
+}
+.note_content_area {
+	word-wrap: break-word; 
+	word-break: normal; 
+	white-space: pre-line;
+	border-top: 1px solid #CECECE;
+	/* border-bottom: 1px solid #CECECE; */
+}
+
+.like_n_collect_area {
+	margin: 0 auto;
+	text-align: center;
+}
+.like_n_collect_meta{
+	/*	padding: 1px 1px 1px 1px;*/
+	width:auto;
+	height:50px;
+	border: 1px solid #CECECE;
+	
+	text-align: center;
+	margin: 5px;
+	padding: 5px;
+	cursor: pointer;
+	cursor: hand;
+}
+.comment_box{
+	list-style: none;
+	margin: 5px;
+	border-bottom: 1px solid #CECECE;
+}
+.comment_content{
+	word-wrap: break-word; 
+	word-break: normal; 
+	white-space: pre-line;
+}
+.image_area{
+	text-align: center;
+}
+.search_result_area{
+	border-top: 1px solid #CECECE;
+}
+
+.delete_note_comment{
+	/*	padding: 1px 1px 1px 1px;*/
+	width:auto;
+	height:50px;
+	border: 1px solid #CECECE;
+	
+	text-align: center;
+	margin: 5px;
+	padding: 5px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+.delete_game_comment{
+	/*	padding: 1px 1px 1px 1px;*/
+	width:auto;
+	height:50px;
+	border: 1px solid #CECECE;
+	
+	text-align: center;
+	margin: 5px;
+	padding: 5px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+.lines{
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.level-box{
+	border-top: 1px inset;
+	border-bottom: 1px outset;
+	border-left: 1px inset;
+	border-right: 1px outset;
+}
+.item-box{
+	margin-top: 10px;
+}

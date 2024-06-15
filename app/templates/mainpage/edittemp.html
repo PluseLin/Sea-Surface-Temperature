@@ -1,0 +1,301 @@
+{% extends "base/index_base.html" %}
+
+{% block page_content %}
+<div class="row mb-3">
+    <h3>查询修改温度信息</h3>
+</div>
+
+<div class="row mb-3">
+    <form id="FilterForm">
+        <div class="row mb-2">
+            <label for="time" class="col-sm-2 col-form-label">日期: </label>
+            <div class="col-sm-4">
+                <input type="text" id="time1" class="form-control form-control-sm" placeholder="年">
+            </div>
+            <div class="col-sm-2 mx-auto text-center"><h5> - </h5></div>
+            <div class="col-sm-4">
+                <input type="text" id="time2" class="form-control form-control-sm" placeholder="月">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <label for="latitude" class="col-sm-2 col-form-label">纬度范围: </label>
+            <div class="col-sm-4">
+                <input type="text" id="latitude1" class="form-control form-control-sm" placeholder="纬度下限">
+            </div>
+            <div class="col-sm-2 mx-auto text-center"><h5> - </h5></div>
+            <div class="col-sm-4">
+                <input type="text" id="latitude2" class="form-control form-control-sm" placeholder="纬度上限">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <label for="longitude" class="col-sm-2 col-form-label">经度范围: </label>
+            <div class="col-sm-4">
+                <input type="text" id="longitude1" class="form-control form-control-sm" placeholder="经度下限">
+            </div>
+            <div class="col-sm-2 mx-auto text-center"><h5> - </h5></div>
+            <div class="col-sm-4">
+                <input type="text" id="longitude2" class="form-control form-control-sm" placeholder="经度上限">
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-4">
+
+            </div>
+            <div class="col-sm-4">
+                <button id="sumbit" type="submit" class="btn btn-primary">筛选</button>
+            </div>
+            <div class="col-sm-4">
+                <button id="clear" type="button" class="btn btn-primary" onclick="ClearAll()">清空条件</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- 显示结果 -->
+<div class="row mb-3">
+    <div id="show_result">
+        <h4></h4>
+    </div>
+</div> 
+
+<!-- table -->
+<div class="table-container">
+    <table class="table table-responsive" id="query_result">
+        <thead>
+            <th>时间</th><th>经度</th><th>纬度</th><th>海洋表面温度(SST)</th><th>海表温度异常(SSTA)</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+<div class="row mb-3">
+    <!-- 修改信息模态框 -->
+    <div class="modal fade modal-lg" id="EditModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">修改温度信息</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="EditForm" class="form-horizontal">
+                        <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">时间: </label>
+                            <div class="col-sm-9">
+                                <input type="text" id="time_area" class="form-control edit_area" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">经度: </label>
+                            <div class="col-sm-9">
+                                <input type="text" id="lon_area" class="form-control edit_area" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">纬度: </label>
+                            <div class="col-sm-9">
+                                <input type="text" id="lat_area" class="form-control edit_area" disabled>
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">海洋表面温度(SST): </label>
+                            <div class="col-sm-9">
+                                <input type="text" id="sst_area" class="form-control edit_area">
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <label class="col-sm-3 col-form-label">海表温度异常(SSTA): </label>
+                            <div class="col-sm-9">
+                                <input type="text" id="ssta_area" class="form-control edit_area">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="submit" id="update" class="btn btn-primary">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function ClearAll(){
+    $("#FilterForm input").each(function(){
+        $(this).val('');
+    })
+}
+
+function GetDateValue(compoment){
+    var year=$(compoment+"1").val()
+    var month=$(compoment+"2").val()
+
+    if(!$.isNumeric(year) || !$.isNumeric(month)){
+        return "0000-00"
+    }
+
+    if (1<=parseInt(month) && parseInt(month)<=9){
+        month="0"+parseInt(month)
+    }
+    return year+"-"+month
+}
+
+
+function GetRangeValue(compoment){
+    var num1=$(compoment+"1").val()
+    var num2=$(compoment+"2").val()
+
+    if(!$.isNumeric(num1) || !$.isNumeric(num2)){
+        return [0,-1]
+    }
+
+    return [parseInt(num1),parseInt(num2)]
+}
+
+function GetTextValue(compoment){
+    var value=$(compoment).val();
+    return value==""?null:value
+}
+
+function addButton(id,text){
+    return '<button class="btn btn-outline-primary btn-sm" id="'+id+'">'+text+'</button>'
+}
+
+function fillinTableLine(line,index){
+    var str="";
+    //<tr>
+    // str+="<tr id=tr_"+index+">";
+    //checkbox
+    //data
+    for(var data of line){
+        str+="<td>"+data+"</td>";
+    }
+    str+="<td>"+addButton("edit_"+index,"修改")+"</td>";
+    // str+="</tr>";
+    return str;
+}
+
+function initline(compoment,data){
+    var table_area=$(compoment);
+    table_area.empty();
+    for(var i=0;i<data.length;i++){
+        var str=fillinTableLine(data[i],i);
+        table_area.append("<tr index="+i+">"+str+"</tr>");
+    }
+}
+
+function fillin_Form(compoment,data){
+    $("#time_area").val(data[0]);
+    $("#lon_area").val(data[1]);
+    $("#lat_area").val(data[2]);
+    $("#sst_area").val(data[3]);
+    $("#ssta_area").val(data[4]);
+}
+
+function updateline(compoment,data,index){
+    var trow=$(compoment);
+    trow.empty();
+    
+    var str=fillinTableLine(data,index);
+    trow.append(str);
+}
+
+$(document).ready(function(){
+    var query_data=[];
+    //激活提示栏
+    $("#edit_page").addClass("active");
+
+    //查询
+    $('#FilterForm').submit(
+        function(event){
+            event.preventDefault();
+            var send_data={
+                'time':GetDateValue("#time"),
+                'lat':GetRangeValue("#latitude"),
+                'lon':GetRangeValue("#longitude")
+            };
+            $.ajax({
+                type:"POST",
+                cache:false,
+                data:JSON.stringify(send_data),
+                url:"/action/query_range",
+                contentType:'application/json;charset=UTF-8',
+                dataType:'json',
+                async:true,
+                timeout:10000,
+                success: function(response){
+                    const table=$('#query_result tbody');
+                    table.empty();
+                    query_data=response;
+                    //更新结果
+                    $("#show_result h4").text("共查询到"+query_data.length+"条结果");
+                    //导入数据
+                    initline(
+                        "#query_result tbody",
+                        query_data
+                    );
+                },
+                error:function(error){
+                    window.alert("查询失败，请联系管理员");
+                    $(".modal").modal("hide");
+                }
+            })
+        }
+    );
+
+    $("#query_result").on("click","button",function(){
+        var ids=$(this).attr("id").split("_");
+        var action=ids[0],index=ids[1];
+        //修改信息
+        if (action=="edit"){
+            $("#EditModal").modal("show");
+            fillin_Form("#EditForm",query_data[index]);
+            $("#EditModal").attr("index",index);
+        }
+    }) 
+
+    //更新表单 ajax
+    $("#update").click(function(){
+        //获取input的全部内容
+        var index=$("#EditModal").attr("index");
+        var form_data=[
+            GetTextValue("#time_area"),
+            GetTextValue("#lon_area"),
+            GetTextValue("#lat_area"),
+            GetTextValue("#sst_area"),
+            GetTextValue("#ssta_area")
+        ];
+        
+        $.ajax({
+            url:"/action/update",
+            cache:false,
+            type:'POST',
+            data:JSON.stringify(form_data),
+            contentType:'application/json;charset=UTF-8',
+            dataType:'json',
+            async:true,
+            timeout:10000,
+            success:function(response){
+                window.alert(response.message);
+                if (response.success){
+                    query_data[index]=form_data;
+                    updateline("tr[index="+index+"]",query_data[index],index);
+                }
+                $("#EditModal").modal("hide");
+            },
+            error:function(error){
+                window.alert("系统出现故障，请联系管理员");
+                $(".modal").modal("hide");
+            }
+        });
+    });
+
+})
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+.view_column{
+    float:left;
+    width:49%; 
+}
+
+.user_info{     
+    list-style: none;
+}
+
+.view_middle{
+    float: left;
+    width:2%;
+}
+
+.view_titles{
+    border:1px solid #CECECE;
+    padding: 5px;
+}
+
+.delete_button{
+   width:auto;
+   height:50px;
+   border: 1px solid #CECECE;
+   
+   text-align: center;
+   margin: 5px;
+   padding: 5px;
+   cursor: pointer;
+   cursor: hand;
+}
+
+.edit_button{
+    width: auto;
+    height:50px;
+    border: 1px solid #CECECE;
+   
+    text-align: center;
+    margin: 5px;
+    padding: 5px;
+    cursor: pointer;
+    cursor: hand;
+}
+
+.lines{
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.level-box{
+	border-top: 1px inset;
+	border-bottom: 1px outset;
+	border-left: 1px inset;
+	border-right: 1px outset;
+}
